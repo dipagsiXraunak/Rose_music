@@ -6,6 +6,9 @@ A powerful Telegram group music bot.
 - Logger & heartbeat
 - Persistent user/group data via MongoDB
 
+  
+- <img src="https://files.catbox.moe/9q73nt.jpg" width="200">
+
 ### Setup
 1. Fill `.env` with your credentials
 2. Install requirements: `pip install -r requirements.txt`
