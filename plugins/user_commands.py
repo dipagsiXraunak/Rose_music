@@ -3,13 +3,14 @@ from main import app, user, call_py
 from utils.yt_utils import get_audio_url, get_video_url
 from music.player import player
 from utils.logger import send_log
-from config import THUMBNAIL_URL
+from config import THUMBNAIL_URL, OWNER_ID
+from utils.helpers import is_admin
 
 async def ensure_voice_chat(client, chat_id):
     try: await client.get_group_call(chat_id)
     except: await client.create_group_call(chat_id)
 
-@app.on_message(filters.command("play") & filters.group)
+@app.on_message(filters.command("play") & filters.group & ~filters.user(OWNER_ID) & ~filters.create(is_admin))
 async def user_play(client, message):
     if len(message.command) < 2: return await message.reply("❌ Usage: /play <song>")
     query = message.text.split(maxsplit=1)[1]
@@ -26,7 +27,7 @@ async def user_play(client, message):
     else: await msg.edit(f"🎵 Added to queue: **{title}**")
     await send_log(client, f"👤 /play: {title} by {message.from_user.mention}")
 
-@app.on_message(filters.command("vplay") & filters.group)
+@app.on_message(filters.command("vplay") & filters.group & ~filters.user(OWNER_ID) & ~filters.create(is_admin))
 async def user_vplay(client, message):
     if len(message.command) < 2: return await message.reply("❌ Usage: /vplay <video>")
     query = message.text.split(maxsplit=1)[1]
