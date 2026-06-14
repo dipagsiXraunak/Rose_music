@@ -1,9 +1,10 @@
+import asyncio
 from pyrogram import Client
 from config import API_ID, API_HASH, BOT_TOKEN, SESSION_STRING
 from utils.db import init_db
 
-# Initialize database
-init_db()
+# Initialize database properly
+asyncio.run(init_db())
 
 app = Client(
     "RoseMusic",
