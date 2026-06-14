@@ -3,6 +3,6 @@ py-tgcalls
 yt-dlp
 python-dotenv
 flask
-pymongo
+pymongo==4.5.0
 motor==3.3.2
 TgCrypto==1.2.5
