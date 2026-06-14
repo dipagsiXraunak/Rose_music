@@ -6,7 +6,6 @@ from utils.helpers import safe_pin
 from utils.logger import send_log
 from utils.db import save_group, save_user, load_groups, load_users
 
-# Load from DB on startup (will be populated in background)
 joined_groups = set()
 joined_users = set()
 
@@ -16,8 +15,6 @@ async def init_persistence():
     joined_users = await load_users()
     print(f"Loaded {len(joined_groups)} groups and {len(joined_users)} users from DB.")
 
-# We will call this in main.py after init_db
-
 KEYBOARD = InlineKeyboardMarkup([
     [InlineKeyboardButton("📣 Support", url=SUPPORT_LINK),
      InlineKeyboardButton("🔔 Updates", url=UPDATE_LINK)],
@@ -26,10 +23,10 @@ KEYBOARD = InlineKeyboardMarkup([
     [InlineKeyboardButton("➕ Add to Group", url=f"https://t.me/{app.me.username}?startgroup=true")]
 ])
 
-@app.on_message(filters.command("start") & filters.private)
+@app.on_message(filters.command("start"))
 async def pm_start(client, message):
     joined_users.add(message.from_user.id)
-    await save_user(message.from_user.id)   # persist to MongoDB
+    await save_user(message.from_user.id)
     caption = (
         f"🌸 **{app.me.first_name}** ❤️‍🔥\n\n"
         "👋 Hello! Main **ROSE Music Bot** hoon.\n"
@@ -43,13 +40,13 @@ async def pm_start(client, message):
             await message.reply(caption, reply_markup=KEYBOARD)
     else:
         await message.reply(caption, reply_markup=KEYBOARD)
-    await send_log(client, f"👋 /start by {message.from_user.mention} [{message.from_user.id}] in PM")
+    await send_log(client, f"👋 /start by {message.from_user.mention} [{message.from_user.id}]")
 
 @app.on_chat_member_updated()
 async def track_groups(client, event):
     if event.new_chat_member and event.new_chat_member.user.id == (await client.get_me()).id:
         joined_groups.add(event.chat.id)
-        await save_group(event.chat.id)   # persist to MongoDB
+        await save_group(event.chat.id)
         await send_log(client, f"➕ Bot added to group: {event.chat.title} [{event.chat.id}]")
 
 @app.on_message(filters.command("broadcast") & filters.user(OWNER_ID))
@@ -64,7 +61,7 @@ async def broadcast_groups(client, message):
             count += 1
         except: pass
     await message.reply(f"✅ Broadcast to {count} groups.")
-    await send_log(client, f"📢 Broadcast by owner to {count} groups. Message: {text[:50]}...")
+    await send_log(client, f"📢 Broadcast by owner to {count} groups.")
 
 @app.on_message(filters.command("pmcast") & filters.user(OWNER_ID))
 async def broadcast_users(client, message):
@@ -82,4 +79,4 @@ async def broadcast_users(client, message):
 @app.on_message(filters.command("stats") & filters.user(OWNER_ID))
 async def stats(client, message):
     await message.reply(f"👥 Groups: {len(joined_groups)}\n👤 Users: {len(joined_users)}")
-    await send_log(client, f"📊 /stats requested by owner")
+    await send_log(client, f"📊 /stats by owner")
