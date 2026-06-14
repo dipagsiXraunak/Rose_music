@@ -7,10 +7,10 @@ from utils.logger import send_log
 
 FANCY_NAME = "🌸 ᥀꯭🦄ุᮀ̶⃝꯭჻꯭꯭𝐑꯭꯭꯭꯭ ⃪𝐎꯭꯭꯭꯭ ⃪֟፝͝𝐒꯭꯭꯭꯭ ⃪𝐄⃪꯭꯭꯭꯭🍬᥀꯭჻꯭꯭𝐗⃪꯭꯭꯭꯭🍬᥀꯭⃝꯭჻꯭꯭𝐌꯭꯭꯭꯭ ⃪𝐮꯭꯭꯭꯭ ⃪֟፝͝𝐬꯭꯭꯭꯭ ⃪𝛊꯭꯭꯭꯭ ⃪𝐜⃪꯭꯭꯭꯭🍬⃝゚⃞꯭࿐"
 
-WELCOME_TEXT = f"""{FANCY_NAME}
+WELCOME_TEXT = """{fancy}
 
-✨ Welcome, {{mention}} to **{{chat_title}}**!
-🎶 I'm ROSE Music Bot – let's rock the voice chat! ❤️‍🔥
+✨ Welcome, {mention} to **{chat_title}**!
+🎶 I'm ROSE Music Bot - let's rock the voice chat! ❤️‍🔥
 Use /help to see commands."""
 
 VOICE_START_TEXT = "🎤 **ROSE** aa gayi! Voice chat shuru, ho jao taiyar! ❤️‍🔥"
@@ -43,18 +43,9 @@ async def welcome_new_member(client, event):
         user_member = event.new_chat_member.user
         chat = event.chat
         mention = f"<a href='tg://user?id={user_member.id}'>{user_member.first_name}</a>"
-        await client.send_message(chat.id, WELCOME_TEXT.format(mention=mention, chat_title=chat.title), disable_web_page_preview=True)
+        msg = WELCOME_TEXT.format(fancy=FANCY_NAME, mention=mention, chat_title=chat.title)
+        await client.send_message(chat.id, msg, disable_web_page_preview=True)
         await send_log(client, f"👋 New member {user_member.mention} joined {chat.title} [{chat.id}]")
-
-@app.on_message(filters.voice_chat_started)
-async def voice_start(client, message):
-    await message.reply(VOICE_START_TEXT)
-    await send_log(client, f"🎤 Voice chat started in {message.chat.title} [{message.chat.id}]")
-
-@app.on_message(filters.voice_chat_ended)
-async def voice_end(client, message):
-    await message.reply(VOICE_END_TEXT)
-    await send_log(client, f"🔇 Voice chat ended in {message.chat.title} [{message.chat.id}]")
 
 @app.on_message(filters.command("help"))
 async def help_cmd(client, message):
